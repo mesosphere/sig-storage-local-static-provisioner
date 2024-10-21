@@ -2,6 +2,8 @@ module sigs.k8s.io/sig-storage-local-static-provisioner
 
 go 1.22.7
 
+toolchain go1.22.8
+
 require (
 	github.com/golang/glog v1.1.2
 	github.com/kubernetes-csi/csi-proxy/client v1.0.2
