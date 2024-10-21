@@ -3,7 +3,6 @@ on:
   push:
     branches: 
       - master
-
 jobs:
   build:
     name: Build
@@ -29,4 +28,4 @@ jobs:
           export REGISTRY=gchr.io/mesosphere
           export DOCKER_CLI_EXPERIMENTAL=enabled
           export OUTPUT_TYPE=docker
-          make build-container-linux-amd64
+          make build-and-push-container-linux-amd64

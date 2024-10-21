@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-REGISTRY ?= registry.k8s.io/sig-storage
+REGISTRY ?= ghcr.io/mesosphere
 VERSION ?= latest
 GOVERSION ?= 1.17
 
