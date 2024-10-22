@@ -1,8 +1,8 @@
 name: Build
 on:
   push:
-    branches: 
-      - master
+    tags:
+      - 'v*'
 jobs:
   build:
     name: Build
@@ -26,6 +26,7 @@ jobs:
       - name: Build and push container image
         run: |
           export REGISTRY=gchr.io/mesosphere
+          export VERSION=v2.7.0-ntnx.1
           export DOCKER_CLI_EXPERIMENTAL=enabled
           export OUTPUT_TYPE=docker
           make build-and-push-container-linux-amd64
