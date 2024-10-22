@@ -25,7 +25,7 @@ jobs:
       
       - name: Build and push container image
         run: |
-          export REGISTRY=gchr.io/mesosphere
+          export REGISTRY=ghcr.io/mesosphere
           export VERSION=${{ github.ref_name }}
           export DOCKER_CLI_EXPERIMENTAL=enabled
           export OUTPUT_TYPE=docker
