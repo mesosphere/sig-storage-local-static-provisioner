@@ -76,7 +76,7 @@ build-node-cleanup-controller-linux-%:
 build-and-push-container-linux-%: init-buildx
 	CGO_ENABLED=0 GOOS=linux GOARCH=$* go build -a -ldflags '-extldflags "-static"' -mod vendor -o _output/linux/$*/local-volume-provisioner ./cmd/local-volume-provisioner
 	$(DOCKER) buildx build --file=./deployment/docker/Dockerfile --platform=linux/$* \
-		-t $(STAGINGIMAGE):$(STAGINGVERSION)_linux_$* \
+		-t $(STAGINGIMAGE):$(STAGINGVERSION) \
 		--build-arg OS=linux \
 		--build-arg ARCH=$* \
 		--push .
