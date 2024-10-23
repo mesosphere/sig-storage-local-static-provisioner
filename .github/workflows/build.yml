@@ -27,6 +27,9 @@ jobs:
         run: |
           export REGISTRY=ghcr.io/mesosphere
           export VERSION=${{ github.ref_name }}
+          export LINUX_ARCH="amd64 arm64"
+          export WINDOWS_DISTROS=""
+          export SKIP_PUSH_LATEST=1
           export DOCKER_CLI_EXPERIMENTAL=enabled
           export OUTPUT_TYPE=docker
-          make build-and-push-container-linux-amd64
+          make release
