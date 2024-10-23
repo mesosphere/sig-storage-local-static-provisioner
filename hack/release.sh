@@ -217,8 +217,8 @@ if [ -z "$SKIP_BUILD" ]; then
     make cross \
         REGISTRY=$REGISTRY \
         VERSION=$VERSION \
-        LINUX_ARCH="$LINUX_ARCH" \
-        WINDOWS_DISTROS="$WINDOWS_DISTROS"
+        LINUX_ARCH="$LINUX_ARCH"
+#        WINDOWS_DISTROS="$WINDOWS_DISTROS"
 else
     echo "info: build and push is skipped"
 fi
