@@ -91,7 +91,8 @@ ALLOW_OVERRIDE=${ALLOW_OVERRIDE:-}
 SKIP_BUILD=${SKIP_BUILD:-}
 SKIP_PUSH_LATEST=${SKIP_PUSH_LATEST:-}
 LINUX_ARCH=${LINUX_ARCH:-amd64 arm arm64 ppc64le s390x}
-WINDOWS_DISTROS=${WINDOWS_DISTROS:-1809 ltsc2022}
+#WINDOWS_DISTROS=${WINDOWS_DISTROS:-1809 ltsc2022}
+WINDOWS_DISTROS=${WINDOWS_DISTROS:-}
 
 echo "REGISTRY: $REGISTRY"
 echo "VERSION: $VERSION"
@@ -234,10 +235,12 @@ function docker_create_multi_arch() {
     local linux_images=$(echo "${LINUX_ARCH}" | tr ' ' '\n' | while read -r arch; do \
         echo $image:${VERSION}_linux_${arch}; \
     done);
-    local windows_images=$(echo "${WINDOWS_DISTROS}" | tr ' ' '\n' | while read -r distro; do \
-        echo $image:${VERSION}_windows_${distro}; \
-    done);
-    local all_images="${linux_images} ${windows_images}"
+    # excluding the windows build
+    # local windows_images=$(echo "${WINDOWS_DISTROS}" | tr ' ' '\n' | while read -r distro; do \
+    #     echo $image:${VERSION}_windows_${distro}; \
+    # done);
+    #local all_images="${linux_images} ${windows_images}"
+    local all_images="${linux_images}"
 
     # create a manifest with all the images created
     docker manifest create --amend $manifest_image $all_images
@@ -251,12 +254,12 @@ function docker_create_multi_arch() {
 
     # annotate the windows images with the base image os-version
     # from https://github.com/kubernetes-csi/csi-release-tools/blob/5b9a1e06794ddb137ff7e2d565416cc6934ec380/build.make#L181-L189
-    echo "${WINDOWS_DISTROS}" | tr ' ' '\n' | while read -r distro; do
-        local windows_image=$image:${VERSION}_windows_${distro}
-        # the image matches the value in the Makefile
-        local os_version=$(docker manifest inspect mcr.microsoft.com/windows/servercore:${distro} | grep "os.version" | head -n 1 | awk '{print $2}' | sed -e 's/"//g')
-        docker manifest annotate --os-version ${os_version} $manifest_image $windows_image
-    done
+    # echo "${WINDOWS_DISTROS}" | tr ' ' '\n' | while read -r distro; do
+    #     local windows_image=$image:${VERSION}_windows_${distro}
+    #     # the image matches the value in the Makefile
+    #     local os_version=$(docker manifest inspect mcr.microsoft.com/windows/servercore:${distro} | grep "os.version" | head -n 1 | awk '{print $2}' | sed -e 's/"//g')
+    #     docker manifest annotate --os-version ${os_version} $manifest_image $windows_image
+    # done
 
     docker manifest push --purge $manifest_image
 }
