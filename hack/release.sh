@@ -51,7 +51,6 @@ Environments:
     SKIP_BUILD                  set this to skip build phase (debug only)
     SKIP_PUSH_LATEST            set this to skip pushing the latest stable image as the latest image
     LINUX_ARCH                  Linux architectures to build
-    WINDOWS_DISTROS             Windows distros to build
 
 Examples:
 
@@ -66,7 +65,7 @@ Examples:
 
 3) Release multi-arch image to your own registry
 
-    REGISTRY=quay.io/<yourname> LINUX_ARCH="amd64 arm64" WINDOWS_DISTROS="ltsc2019 1909" ./hack/release.sh
+    REGISTRY=quay.io/<yourname> LINUX_ARCH="amd64 arm64" ./hack/release.sh
 
 EOF
 }
@@ -91,7 +90,6 @@ ALLOW_OVERRIDE=${ALLOW_OVERRIDE:-}
 SKIP_BUILD=${SKIP_BUILD:-}
 SKIP_PUSH_LATEST=${SKIP_PUSH_LATEST:-}
 LINUX_ARCH=${LINUX_ARCH:-amd64 arm arm64 ppc64le s390x}
-WINDOWS_DISTROS=${WINDOWS_DISTROS:-1809 ltsc2022}
 
 echo "REGISTRY: $REGISTRY"
 echo "VERSION: $VERSION"
@@ -104,7 +102,6 @@ echo "ALLOW_OVERRIDE: $ALLOW_OVERRIDE"
 echo "SKIP_BUILD: $SKIP_BUILD"
 echo "SKIP_PUSH_LATEST: $SKIP_PUSH_LATEST"
 echo "LINUX_ARCH: $LINUX_ARCH"
-echo "WINDOWS_DISTROS: $WINDOWS_DISTROS"
 go version
 
 IMAGE="$REGISTRY/local-volume-provisioner"
@@ -217,8 +214,7 @@ if [ -z "$SKIP_BUILD" ]; then
     make cross \
         REGISTRY=$REGISTRY \
         VERSION=$VERSION \
-        LINUX_ARCH="$LINUX_ARCH" \
-        WINDOWS_DISTROS="$WINDOWS_DISTROS"
+        LINUX_ARCH="$LINUX_ARCH"
 else
     echo "info: build and push is skipped"
 fi
@@ -234,10 +230,7 @@ function docker_create_multi_arch() {
     local linux_images=$(echo "${LINUX_ARCH}" | tr ' ' '\n' | while read -r arch; do \
         echo $image:${VERSION}_linux_${arch}; \
     done);
-    local windows_images=$(echo "${WINDOWS_DISTROS}" | tr ' ' '\n' | while read -r distro; do \
-        echo $image:${VERSION}_windows_${distro}; \
-    done);
-    local all_images="${linux_images} ${windows_images}"
+    local all_images="${linux_images}"
 
     # create a manifest with all the images created
     docker manifest create --amend $manifest_image $all_images
@@ -247,15 +240,6 @@ function docker_create_multi_arch() {
     echo "${LINUX_ARCH}" | tr ' ' '\n' | while read -r arch; do
         local linux_image=$image:${VERSION}_linux_${arch}
         docker manifest annotate --arch $arch $manifest_image $linux_image
-    done
-
-    # annotate the windows images with the base image os-version
-    # from https://github.com/kubernetes-csi/csi-release-tools/blob/5b9a1e06794ddb137ff7e2d565416cc6934ec380/build.make#L181-L189
-    echo "${WINDOWS_DISTROS}" | tr ' ' '\n' | while read -r distro; do
-        local windows_image=$image:${VERSION}_windows_${distro}
-        # the image matches the value in the Makefile
-        local os_version=$(docker manifest inspect mcr.microsoft.com/windows/servercore:${distro} | grep "os.version" | head -n 1 | awk '{print $2}' | sed -e 's/"//g')
-        docker manifest annotate --os-version ${os_version} $manifest_image $windows_image
     done
 
     docker manifest push --purge $manifest_image

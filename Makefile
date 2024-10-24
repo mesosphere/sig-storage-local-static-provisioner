@@ -19,7 +19,6 @@ GOVERSION ?= 1.17
 # These env vars have default values set from hack/release.sh, the values
 # shown here are for `make` and `make verify` only
 LINUX_ARCH ?= amd64
-WINDOWS_DISTROS ?=
 
 DOCKER=DOCKER_CLI_EXPERIMENTAL=enabled docker
 STAGINGVERSION=${VERSION}
@@ -39,9 +38,7 @@ all: build-container-linux-amd64
 
 cross: init-buildx \
 	$(addprefix build-and-push-container-linux-,$(LINUX_ARCH)) \
-	$(addprefix build-and-push-node-cleanup-controller-linux-,$(LINUX_ARCH)) \
-	$(addprefix build-and-push-container-windows-,$(WINDOWS_DISTROS)) \
-	$(addprefix build-and-push-node-cleanup-controller-windows-,$(WINDOWS_DISTROS))
+	$(addprefix build-and-push-node-cleanup-controller-linux-,$(LINUX_ARCH))
 .PHONY: cross
 
 verify:

@@ -22,7 +22,7 @@ steps:
   - GIT_TAG=${_GIT_TAG}
   - PULL_BASE_REF=${_PULL_BASE_REF}
   - HOME=/root
-  # intentionally not setting LINUX_ARCH and WINDOWS_DISTROS
+  # intentionally not setting LINUX_ARCH
   # the default ones in hack/release.sh will be used instead
 substitutions:
   # _GIT_TAG will be filled with a git-based tag for the image, of the form vYYYYMMDD-hash, and
