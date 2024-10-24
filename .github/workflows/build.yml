@@ -14,7 +14,7 @@ jobs:
       - name: Install go
         uses: actions/setup-go@v5
         with:
-          go-version: 1.23.1
+          go-version: 1.23.2
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
@@ -28,7 +28,7 @@ jobs:
           export REGISTRY=ghcr.io/mesosphere
           export VERSION=${{ github.ref_name }}
           export LINUX_ARCH="amd64 arm64"
-          export WINDOWS_DISTROS=""
+          export CONFIRM=1
           export SKIP_PUSH_LATEST=1
           export ALLOW_UNSTABLE=1
           export DOCKER_CLI_EXPERIMENTAL=enabled
