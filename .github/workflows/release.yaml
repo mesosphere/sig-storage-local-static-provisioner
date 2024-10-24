@@ -1,0 +1,36 @@
+name: Release
+on:
+  push:
+    tags:
+      - 'v*'
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push container image
+        run: |
+          export REGISTRY=ghcr.io/mesosphere
+          export VERSION=${{ github.ref_name }}
+          export LINUX_ARCH="amd64 arm64"
+          export CONFIRM=1
+          export SKIP_PUSH_LATEST=1
+          export ALLOW_UNSTABLE=1
+          export DOCKER_CLI_EXPERIMENTAL=enabled
+          export OUTPUT_TYPE=docker
+          make release
